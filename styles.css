@@ -13,6 +13,7 @@
   --color-navy-600: #172b50;   /* hover de tarjetas */
   --color-lime:     #c3f53c;   /* acento principal */
   --color-lime-dim: #9ecb2a;   /* acento apagado */
+  --color-amber:    #ffb020;   /* avisos de cambio / "Actualizado" */
   --color-text:     #e8eef7;
   --color-text-mut: #93a3bd;   /* texto secundario */
   --color-text-off: #5c6c88;   /* texto de clases pasadas */
@@ -29,6 +30,13 @@
   --radius-pill: 999px;
   --container: 1120px;
   --gutter: 20px;
+
+  /* Columnas del horario en desktop. Se usa EN LOS DOS sitios (encabezado y
+     filas) para que queden perfectamente alineados. Si cambias el ancho de
+     una columna, se ajustan ambos a la vez. */
+  --schedule-cols: minmax(0, 2.5fr) minmax(0, 1.5fr) minmax(0, 1.4fr) 172px;
+  --schedule-gap: 16px;
+  --schedule-pad: 22px;
 
   --transition: 180ms ease;
 }
@@ -160,48 +168,141 @@ a { color: inherit; text-decoration: none; }
 
 /* ---------------------------- 5. SECCIONES ----------------------------- */
 
+/* ------ TOPBAR (header que aparece al hacer scroll) ------ */
+.topbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: rgba(8, 19, 42, .82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-line);
+
+  /* Oculto por defecto: entra deslizándose cuando el hero sale de pantalla */
+  transform: translateY(-100%);
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 320ms cubic-bezier(.22, 1, .36, 1),
+              opacity 240ms ease,
+              visibility 0s linear 320ms;
+}
+
+.topbar--visible {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+.topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-block: 10px;
+}
+
+.topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-size: .92rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+
+.topbar__brand-accent { color: var(--color-lime); }
+
+/* Punto pulsante tipo "estamos en vivo" */
+.topbar__live {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex: none;
+  border-radius: 50%;
+  background-color: var(--color-lime);
+}
+
+.topbar__live::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-lime);
+  animation: pulso-vivo 2s ease-out infinite;
+}
+
+@keyframes pulso-vivo {
+  0%   { transform: scale(.6); opacity: .9; }
+  70%  { transform: scale(1.5); opacity: 0; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+.topbar__logo {
+  width: 44px;
+  height: auto;
+  flex: none;
+}
+
+/* Barra de progreso de lectura, pegada al borde inferior del header */
+.topbar__progress {
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--color-lime-dim), var(--color-lime));
+  transition: width 90ms linear;
+}
+
 /* ------ HERO ------ */
 .hero {
   position: relative;
   isolation: isolate;
-  min-height: 78vh;
+  /* Altura fija, NO en vh: con vh el hero se estiraba muchísimo en
+     pantallas altas y quedaba un espacio vacío enorme antes del título. */
+  min-height: 460px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* logo arriba, título abajo */
-  padding-block: 28px 56px;
+  padding-block: 22px 44px;
   overflow: hidden;
 }
 
 .hero__top {
   display: flex;
   justify-content: flex-end;
+  margin-bottom: 30px;
 }
 
+/* El título se apoya en la parte baja del hero, sin dejar un hueco enorme */
+.hero__inner { margin-top: auto; }
+
 /* Imagen de fondo del hero.
-   👉 Para cambiarla, reemplaza el archivo img/imagen_fondo_portada.jpg
+   👉 Para cambiarla, reemplaza el archivo img/hero.jpg
       o ajusta la url() de abajo. */
 .hero__media {
   position: absolute;
   inset: 0;
   z-index: -2;
   background-color: #08132a;
-  background-image: url("img/imagen_fondo_portada.jpg");
+  background-image: url("img/hero.jpg");
   background-size: cover;
-  background-position: center 35%;
+  background-position: center 30%;
 }
 
 /* Velo oscuro para que el texto siempre sea legible sobre la foto.
-   La imagen ya es oscura, así que el velo es suave arriba y solo se
-   cierra abajo para fundirse con el fondo de la página. */
+   Se refuerza a la izquierda, que es donde va el título, y se cierra
+   abajo para fundirse con el fondo de la página. */
 .hero__overlay {
   position: absolute;
   inset: 0;
   z-index: -1;
   background:
+    linear-gradient(100deg, rgba(6, 15, 36, .82) 0%, rgba(6, 15, 36, .30) 62%, rgba(6, 15, 36, .18) 100%),
     linear-gradient(180deg,
-      rgba(6, 15, 36, .20) 0%,
-      rgba(6, 15, 36, .45) 45%,
-      rgba(6, 15, 36, .85) 82%,
+      rgba(6, 15, 36, .30) 0%,
+      rgba(6, 15, 36, .42) 45%,
+      rgba(6, 15, 36, .86) 84%,
       var(--color-navy-900) 100%);
 }
 
@@ -213,9 +314,6 @@ a { color: inherit; text-decoration: none; }
   height: auto;
   filter: drop-shadow(0 8px 24px rgba(0, 0, 0, .45));
 }
-
-/* El "&" del logo escrito en texto (footer) */
-.hero__logo-amp { color: var(--color-lime); }
 
 .hero__kicker {
   color: var(--color-lime);
@@ -271,6 +369,107 @@ a { color: inherit; text-decoration: none; }
   font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: -.01em;
+}
+
+/* ------ BANNER "CLASE DE HOY" ------ */
+.today {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 20px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-lime);
+  background: linear-gradient(120deg, rgba(195, 245, 60, .16), rgba(195, 245, 60, .04));
+  box-shadow: 0 0 0 1px rgba(195, 245, 60, .18),
+              0 18px 44px -24px rgba(195, 245, 60, .6);
+}
+
+.today[hidden] { display: none; }
+
+.today__info {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+/* Punto que late, igual al del header */
+.today__pulse {
+  position: relative;
+  width: 9px;
+  height: 9px;
+  flex: none;
+  margin-top: 7px;
+  border-radius: 50%;
+  background-color: var(--color-lime);
+}
+
+.today__pulse::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-lime);
+  animation: pulso-vivo 2s ease-out infinite;
+}
+
+.today__kicker {
+  color: var(--color-lime);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.today__tema {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -.01em;
+  line-height: 1.25;
+}
+
+.today__meta {
+  color: var(--color-text-mut);
+  font-size: .88rem;
+  margin-top: 3px;
+}
+
+.today__hora { color: var(--color-text); font-weight: 700; }
+
+/* Botón del banner */
+.today__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-lime);
+  background-color: var(--color-lime);
+  color: var(--color-navy-900);
+  font-weight: 800;
+  font-size: .92rem;
+  transition: transform var(--transition), background-color var(--transition);
+}
+
+.today__cta:hover { background-color: #d3ff5c; transform: translateY(-2px); }
+
+/* Sin link todavía: apagado y no clicable */
+.today__cta--disabled {
+  background-color: transparent;
+  border-color: var(--color-line-str);
+  color: var(--color-text-mut);
+  cursor: default;
+  pointer-events: none;
+}
+
+/* Cuando aún no hay link, el banner se ve más discreto */
+.today--sin-link {
+  border-color: var(--color-line-str);
+  background: linear-gradient(120deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .015));
+  box-shadow: none;
 }
 
 /* ------ TEMAS ------ */
@@ -353,13 +552,20 @@ a { color: inherit; text-decoration: none; }
 /* ------ HORARIO DE CLASES ------ */
 .schedule__head {
   display: none; /* solo en desktop */
-  padding: 0 22px 12px;
+  /* Mismo padding y mismo borde (transparente) que .class-row, para que las
+     columnas del encabezado caigan exactamente sobre las de las filas. */
+  padding: 0 var(--schedule-pad) 12px;
+  border: 1px solid transparent;
+  border-bottom: 0;
   color: var(--color-text-mut);
   font-size: .72rem;
   font-weight: 700;
   letter-spacing: .16em;
   text-transform: uppercase;
 }
+
+/* Se centra porque el botón ocupa toda la columna y su texto va centrado */
+.schedule__th--end { text-align: center; }
 
 .schedule__body {
   display: grid;
@@ -378,7 +584,7 @@ a { color: inherit; text-decoration: none; }
   grid-template-columns: 1fr;
   gap: 10px;
   align-items: center;
-  padding: 18px 20px;
+  padding: 18px var(--schedule-pad);
   border: 1px solid var(--color-line);
   border-radius: var(--radius-md);
   background: linear-gradient(180deg, rgba(255, 255, 255, .035), rgba(255, 255, 255, .01));
@@ -414,6 +620,7 @@ a { color: inherit; text-decoration: none; }
 .class-row__link {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   padding: 8px 16px;
   border-radius: var(--radius-pill);
@@ -435,11 +642,11 @@ a { color: inherit; text-decoration: none; }
   pointer-events: none;
 }
 
-/* Badge "HOY" */
+/* Badges (HOY / Actualizado) */
 .class-row__badge {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 3px 10px;
   border-radius: var(--radius-pill);
   background-color: var(--color-lime);
@@ -448,16 +655,72 @@ a { color: inherit; text-decoration: none; }
   font-weight: 900;
   letter-spacing: .14em;
   text-transform: uppercase;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.class-row__badge svg { width: 11px; height: 11px; flex: none; }
+
+/* Badge "Actualizado": naranja, para distinguirlo del verde de "HOY" */
+.class-row__badge--actualizado {
+  background-color: transparent;
+  border: 1px solid var(--color-amber);
+  color: var(--color-amber);
+}
+
+/* Nota de qué cambió, ej: "Antes era a las 5:00 p. m." */
+.class-row__cambio {
+  display: block;
+  margin-top: 4px;
+  color: var(--color-amber);
+  font-size: .78rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.class-row__cambio-fecha {
+  display: block;
+  color: var(--color-text-off);
+  font-weight: 500;
+  font-size: .72rem;
+}
+
+/* Franja naranja al costado de una clase modificada */
+.class-row--actualizada::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 3px;
+  border-radius: 0 3px 3px 0;
+  background-color: var(--color-amber);
 }
 
 /* --- Estados de la clase --- */
 
-/* Pasada */
+/* Pasada: apagada pero todavía legible, porque el botón de grabación
+   sigue siendo útil. Al pasar el mouse recupera el contraste. */
 .class-row--pasada {
-  opacity: .45;
-  filter: grayscale(1);
+  opacity: .58;
+  transition: opacity var(--transition), border-color var(--transition);
 }
+.class-row--pasada:hover,
+.class-row--pasada:focus-within { opacity: 1; }
+
 .class-row--pasada .class-row__tema { color: var(--color-text-mut); font-weight: 600; }
+.class-row--pasada .class-row__docente,
+.class-row--pasada .class-row__hora { color: var(--color-text-off); }
+
+/* Botón de grabación */
+.class-row__link--grabacion {
+  border-color: var(--color-line-str);
+  color: var(--color-text-mut);
+}
+.class-row__link--grabacion:hover {
+  border-color: var(--color-lime);
+  color: var(--color-lime);
+}
 
 /* Hoy */
 .class-row--hoy {
@@ -472,6 +735,20 @@ a { color: inherit; text-decoration: none; }
   color: var(--color-navy-900);
 }
 .class-row--hoy .class-row__link:hover { background-color: #d3ff5c; color: var(--color-navy-900); }
+
+/* Es hoy, pero todavía no hay link: sigue marcada como HOY (es información
+   útil) aunque el resaltado se atenúa y el botón queda inactivo. */
+.class-row--hoy.class-row--sin-link {
+  border-color: rgba(195, 245, 60, .45);
+  background: linear-gradient(180deg, rgba(195, 245, 60, .07), rgba(195, 245, 60, .02));
+  box-shadow: none;
+}
+
+.class-row--hoy .class-row__link--disabled {
+  background-color: transparent;
+  border-color: var(--color-line-str);
+  color: var(--color-text-mut);
+}
 
 /* Futura: usa el estilo neutro base, sin modificador extra */
 .class-row--futura:hover { border-color: var(--color-line-str); }
@@ -506,20 +783,134 @@ a { color: inherit; text-decoration: none; }
 /* ------ FOOTER ------ */
 .footer {
   border-top: 1px solid var(--color-line);
-  padding-block: 28px;
+  /* Espacio extra abajo para que el botón de WhatsApp no tape el contenido */
+  padding-block: 34px 104px;
 }
 
 .footer__inner {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 18px;
   align-items: center;
   text-align: center;
 }
 
-.footer__brand { font-weight: 900; letter-spacing: -.02em; }
+.footer__brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
 
-.footer__note { color: var(--color-text-mut); font-size: .85rem; }
+.footer__logo { width: 58px; height: auto; }
+
+/* Enlace a la plataforma */
+.footer__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: .92rem;
+  letter-spacing: -.01em;
+  transition: color var(--transition);
+}
+
+.footer__link:hover { color: var(--color-lime); }
+
+.footer__amp { color: var(--color-lime); }
+
+.footer__link-icon {
+  width: 13px;
+  height: 13px;
+  flex: none;
+  opacity: .6;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.footer__link:hover .footer__link-icon {
+  opacity: 1;
+  transform: translate(2px, -2px);
+}
+
+.footer__note {
+  color: var(--color-text-mut);
+  font-size: .85rem;
+  max-width: 42ch;
+}
+
+/* ------ BOTÓN FLOTANTE DE WHATSAPP ------ */
+.wa-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.wa-fab__circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 50%;
+  background-color: #25d366;   /* verde propio de WhatsApp, para que se reconozca */
+  color: #072b16;
+  box-shadow: 0 10px 28px -8px rgba(37, 211, 102, .65),
+              0 4px 14px rgba(0, 0, 0, .45);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.wa-fab__icon { width: 30px; height: 30px; }
+
+/* Anillo que late para llamar la atención sin ser invasivo */
+.wa-fab__circle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #25d366;
+  animation: pulso-wa 2.6s ease-out infinite;
+}
+
+@keyframes pulso-wa {
+  0%   { transform: scale(1); opacity: .7; }
+  70%  { transform: scale(1.45); opacity: 0; }
+  100% { transform: scale(1.45); opacity: 0; }
+}
+
+.wa-fab:hover .wa-fab__circle {
+  transform: scale(1.07);
+  box-shadow: 0 14px 34px -8px rgba(37, 211, 102, .8),
+              0 4px 14px rgba(0, 0, 0, .5);
+}
+
+/* Etiqueta de texto: solo en pantallas grandes */
+.wa-fab__label {
+  display: none;
+  padding: 9px 15px;
+  border-radius: var(--radius-pill);
+  background-color: rgba(8, 19, 42, .92);
+  border: 1px solid var(--color-line-str);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  font-size: .82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity var(--transition), transform var(--transition);
+}
+
+.wa-fab:hover .wa-fab__label,
+.wa-fab:focus-visible .wa-fab__label {
+  opacity: 1;
+  transform: translateX(0);
+}
 
 /* --------------------------- 6. RESPONSIVE ----------------------------- */
 
@@ -531,22 +922,33 @@ a { color: inherit; text-decoration: none; }
 
   .facts { grid-template-columns: repeat(3, 1fr); }
 
+  /* El banner pasa a una sola línea: info a la izquierda, botón a la derecha */
+  .today {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 24px;
+  }
+
   .topics { grid-template-columns: 1fr 1fr; gap: 10px 16px; }
 
   .contact__actions { flex-direction: row; justify-content: center; }
-
-  .footer__inner { flex-direction: row; justify-content: space-between; text-align: left; }
 }
 
 /* Desktop */
 @media (min-width: 900px) {
   :root { --gutter: 40px; }
 
-  .hero { min-height: 82vh; padding-block: 40px 72px; }
+  .hero { min-height: 580px; padding-block: 34px 64px; }
 
   .hero__logo { width: 112px; }
 
   .teacher__photo { width: 116px; height: 116px; }
+
+  /* La etiqueta del botón de WhatsApp solo aparece en pantallas grandes */
+  .wa-fab { right: 26px; bottom: 26px; }
+  .wa-fab__label { display: inline-block; }
 
   .section { padding-block: 88px; }
 
@@ -555,22 +957,21 @@ a { color: inherit; text-decoration: none; }
   .teacher { text-align: left; }
   .teacher__photo { margin-inline: 0; }
 
-  /* Horario en modo tabla */
-  .schedule__head {
-    display: grid;
-    grid-template-columns: 2.4fr 1.6fr 1.3fr auto;
-    gap: 16px;
-  }
-
+  /* Horario en modo tabla: encabezado y filas comparten la MISMA rejilla */
+  .schedule__head,
   .class-row {
-    grid-template-columns: 2.4fr 1.6fr 1.3fr auto;
-    gap: 16px;
-    padding: 18px 22px;
+    display: grid;
+    grid-template-columns: var(--schedule-cols);
+    gap: var(--schedule-gap);
+    align-items: center;
   }
 
   .class-row__etiqueta { display: none; }
 
-  .class-row__acceso { justify-self: end; }
+  /* El botón ocupa toda su columna, así todos quedan del mismo ancho
+     y alineados a la derecha bajo el título "Acceso". */
+  .class-row__acceso { justify-self: stretch; }
+  .class-row__link { width: 100%; }
 }
 
 /* Respeto por quienes prefieren menos movimiento */

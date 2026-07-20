@@ -13,6 +13,17 @@
   var ZONA_COLOMBIA = "America/Bogota";
   var OFFSET_COLOMBIA_MIN = -5 * 60; /* UTC-5, respaldo si Intl falla */
 
+  /* Iconos (SVG en línea, sin archivos externos) */
+  var ICONO_ACTUALIZADO =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/>' +
+    '<path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/></svg>';
+
+  var ICONO_PLAY =
+    '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" ' +
+    'style="width:12px;height:12px;flex:none"><path d="M8 5.5v13l11-6.5z"/></svg>';
+
   /* ---------------------------------------------------------------------
      Utilidades de fecha
      --------------------------------------------------------------------- */
@@ -39,7 +50,7 @@
     }
   }
 
-  /** Texto legible de la fecha/hora en Colombia. Ej: "sáb 1 ago · 6:00 p. m." */
+  /** Texto legible de la fecha/hora en Colombia. Ej: "Sáb, 1 de ago · 6:00 p. m." */
   function formatearFechaHora(fecha) {
     try {
       var dia = new Intl.DateTimeFormat("es-CO", {
@@ -62,6 +73,17 @@
     }
   }
 
+  /** "2026-07-18" → "18 de julio" (para el texto "Actualizado el ...") */
+  function formatearFechaCorta(texto) {
+    var partes = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(texto).trim());
+    if (!partes) return String(texto);
+
+    var meses = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio",
+                 "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+    var mes = meses[Number(partes[2]) - 1];
+    return mes ? Number(partes[3]) + " de " + mes : String(texto);
+  }
+
   function capitalizar(texto) {
     return texto.charAt(0).toUpperCase() + texto.slice(1);
   }
@@ -70,7 +92,13 @@
    * Estado de una clase respecto al momento actual:
    *   "pasada" | "hoy" | "futura"
    */
-  function estadoDeClase(fechaClase, ahora) {
+  function estadoDeClase(clase, fechaClase, ahora) {
+    /* Modo demo: fuerza el resaltado de "HOY" para revisar el diseño.
+       Se activa/desactiva con MODO_DEMO en clases-data.js */
+    if (typeof MODO_DEMO !== "undefined" && MODO_DEMO === true && clase.demoHoy === true) {
+      return "hoy";
+    }
+
     var diaClase = diaColombia(fechaClase);
     var diaHoy = diaColombia(ahora);
 
@@ -79,7 +107,7 @@
   }
 
   /* ---------------------------------------------------------------------
-     Render
+     Render del horario
      --------------------------------------------------------------------- */
 
   /** Evita que un texto de clases-data.js rompa el HTML. */
@@ -91,24 +119,46 @@
       .replace(/"/g, "&quot;");
   }
 
+  /** true si el campo existe y tiene contenido real */
+  function tieneTexto(valor) {
+    return typeof valor === "string" && valor.trim() !== "";
+  }
+
   function crearFila(clase, ahora) {
     var fecha = new Date(clase.fecha);
     var fechaValida = !isNaN(fecha.getTime());
-    var estado = fechaValida ? estadoDeClase(fecha, ahora) : "futura";
+    var estado = fechaValida ? estadoDeClase(clase, fecha, ahora) : "futura";
+    var fueModificada = tieneTexto(clase.cambio);
+    var acceso = calcularAcceso(clase, estado);
 
     var fila = document.createElement("div");
-    fila.className = "class-row class-row--" + estado;
+    fila.className = "class-row class-row--" + estado +
+      (fueModificada ? " class-row--actualizada" : "") +
+      /* Es hoy pero aún sin link: se atenúa el resaltado verde */
+      (estado === "hoy" && !acceso.activo ? " class-row--sin-link" : "");
 
-    /* --- Tema (+ badge HOY) --- */
+    /* --- Tema (+ badges) --- */
     var tema = document.createElement("div");
     tema.className = "class-row__tema";
     tema.innerHTML = escapar(clase.tema);
+
     if (estado === "hoy") {
-      var badge = document.createElement("span");
-      badge.className = "class-row__badge";
-      badge.textContent = "Hoy";
+      var badgeHoy = document.createElement("span");
+      badgeHoy.className = "class-row__badge";
+      badgeHoy.textContent = "Hoy";
       tema.appendChild(document.createTextNode(" "));
-      tema.appendChild(badge);
+      tema.appendChild(badgeHoy);
+    }
+
+    if (fueModificada) {
+      var badgeUpd = document.createElement("span");
+      badgeUpd.className = "class-row__badge class-row__badge--actualizado";
+      badgeUpd.innerHTML = ICONO_ACTUALIZADO + "Actualizado";
+      if (tieneTexto(clase.cambioFecha)) {
+        badgeUpd.title = "Actualizado el " + formatearFechaCorta(clase.cambioFecha);
+      }
+      tema.appendChild(document.createTextNode(" "));
+      tema.appendChild(badgeUpd);
     }
 
     /* --- Docente --- */
@@ -117,40 +167,92 @@
     docente.innerHTML =
       '<span class="class-row__etiqueta">Docente</span>' + escapar(clase.docente);
 
-    /* --- Hora --- */
+    /* --- Hora (+ nota de qué cambió) --- */
     var hora = document.createElement("div");
     hora.className = "class-row__hora";
     hora.innerHTML =
       '<span class="class-row__etiqueta">Hora</span>' +
       (fechaValida ? escapar(formatearFechaHora(fecha)) : "Por definir");
 
-    /* --- Acceso --- */
-    var acceso = document.createElement("div");
-    acceso.className = "class-row__acceso";
+    if (fueModificada) {
+      var nota = document.createElement("span");
+      nota.className = "class-row__cambio";
+      nota.textContent = clase.cambio;
 
-    var hayLink = typeof clase.link === "string" && clase.link.trim() !== "";
-
-    if (estado === "pasada" || !hayLink) {
-      var inactivo = document.createElement("span");
-      inactivo.className = "class-row__link class-row__link--disabled";
-      inactivo.textContent = estado === "pasada" ? "Finalizada" : "Próximamente";
-      acceso.appendChild(inactivo);
-    } else {
-      var link = document.createElement("a");
-      link.className = "class-row__link";
-      link.href = clase.link;
-      link.target = "_blank";
-      link.rel = "noopener";
-      link.textContent = estado === "hoy" ? "Entrar ahora" : "Ver link";
-      link.setAttribute("aria-label", "Acceder a la clase: " + clase.tema);
-      acceso.appendChild(link);
+      if (tieneTexto(clase.cambioFecha)) {
+        var cuando = document.createElement("span");
+        cuando.className = "class-row__cambio-fecha";
+        cuando.textContent = "Actualizado el " + formatearFechaCorta(clase.cambioFecha);
+        nota.appendChild(cuando);
+      }
+      hora.appendChild(nota);
     }
+
+    /* --- Acceso --- */
+    var celdaAcceso = document.createElement("div");
+    celdaAcceso.className = "class-row__acceso";
+    celdaAcceso.appendChild(crearBotonAcceso(clase, acceso));
 
     fila.appendChild(tema);
     fila.appendChild(docente);
     fila.appendChild(hora);
-    fila.appendChild(acceso);
+    fila.appendChild(celdaAcceso);
     return fila;
+  }
+
+  /**
+   * Decide qué hacer con el botón de una clase. Reglas:
+   *
+   *   FUTURA  → siempre "Próximamente" (inactivo).
+   *             El link NO se muestra antes del día de la clase, aunque ya
+   *             esté cargado en clases-data.js.
+   *   HOY     → "Entrar ahora" (verde, activo) SOLO si ya hay link.
+   *             Si todavía no hay link → "Link pronto" (inactivo).
+   *   PASADA  → "Ver grabación" si hay grabación, si no "Grabación pronto".
+   *
+   * Devuelve { texto, url, activo, tipo }
+   */
+  function calcularAcceso(clase, estado) {
+    if (estado === "pasada") {
+      return tieneTexto(clase.grabacion)
+        ? { texto: "Ver grabación", url: clase.grabacion, activo: true, tipo: "grabacion" }
+        : { texto: "Grabación pronto", url: "", activo: false, tipo: "grabacion" };
+    }
+
+    if (estado === "hoy") {
+      return tieneTexto(clase.link)
+        ? { texto: "Entrar ahora", url: clase.link, activo: true, tipo: "vivo" }
+        : { texto: "Link pronto", url: "", activo: false, tipo: "vivo" };
+    }
+
+    /* Futura: nunca se muestra el link todavía */
+    return { texto: "Próximamente", url: "", activo: false, tipo: "futura" };
+  }
+
+  /** Botón de la columna "Acceso" de la tabla. */
+  function crearBotonAcceso(clase, acceso) {
+    if (!acceso.activo) {
+      var inactivo = document.createElement("span");
+      inactivo.className = "class-row__link class-row__link--disabled";
+      inactivo.textContent = acceso.texto;
+      return inactivo;
+    }
+
+    var link = document.createElement("a");
+    link.className = "class-row__link" +
+      (acceso.tipo === "grabacion" ? " class-row__link--grabacion" : "");
+    link.href = acceso.url;
+    link.target = "_blank";
+    link.rel = "noopener";
+
+    if (acceso.tipo === "grabacion") {
+      link.innerHTML = ICONO_PLAY + acceso.texto;
+      link.setAttribute("aria-label", "Ver grabación de la clase: " + clase.tema);
+    } else {
+      link.textContent = acceso.texto;
+      link.setAttribute("aria-label", "Acceder a la clase: " + clase.tema);
+    }
+    return link;
   }
 
   function renderHorario() {
@@ -181,6 +283,86 @@
     contenedor.appendChild(fragmento);
   }
 
+  /**
+   * Banner "Clase de hoy", debajo de las tarjetas de datos clave.
+   * Si hoy no hay clase, el banner se oculta.
+   */
+  function renderBannerHoy() {
+    var banner = document.getElementById("today-banner");
+    if (!banner) return;
+
+    var lista = typeof clases !== "undefined" && Array.isArray(clases) ? clases : [];
+    var ahora = new Date();
+
+    /* Buscamos la clase de hoy (la primera, si hubiera varias) */
+    var claseHoy = null;
+    for (var i = 0; i < lista.length; i++) {
+      var f = new Date(lista[i].fecha);
+      if (isNaN(f.getTime())) continue;
+      if (estadoDeClase(lista[i], f, ahora) === "hoy") { claseHoy = lista[i]; break; }
+    }
+
+    if (!claseHoy) {
+      banner.hidden = true;
+      banner.innerHTML = "";
+      return;
+    }
+
+    var acceso = calcularAcceso(claseHoy, "hoy");
+    var fecha = new Date(claseHoy.fecha);
+
+    banner.className = "today" + (acceso.activo ? "" : " today--sin-link");
+    banner.innerHTML = "";
+
+    /* --- Info --- */
+    var info = document.createElement("div");
+    info.className = "today__info";
+
+    var pulso = document.createElement("span");
+    pulso.className = "today__pulse";
+    pulso.setAttribute("aria-hidden", "true");
+
+    var textos = document.createElement("div");
+
+    var kicker = document.createElement("p");
+    kicker.className = "today__kicker";
+    kicker.textContent = "Clase de hoy";
+
+    var tema = document.createElement("p");
+    tema.className = "today__tema";
+    tema.textContent = claseHoy.tema;
+
+    var meta = document.createElement("p");
+    meta.className = "today__meta";
+    meta.innerHTML = escapar(claseHoy.docente) + ' · <span class="today__hora">' +
+      escapar(formatearFechaHora(fecha)) + "</span>";
+
+    textos.appendChild(kicker);
+    textos.appendChild(tema);
+    textos.appendChild(meta);
+    info.appendChild(pulso);
+    info.appendChild(textos);
+
+    /* --- Botón --- */
+    var boton;
+    if (acceso.activo) {
+      boton = document.createElement("a");
+      boton.className = "today__cta";
+      boton.href = acceso.url;
+      boton.target = "_blank";
+      boton.rel = "noopener";
+      boton.setAttribute("aria-label", "Entrar a la clase de hoy: " + claseHoy.tema);
+    } else {
+      boton = document.createElement("span");
+      boton.className = "today__cta today__cta--disabled";
+    }
+    boton.appendChild(document.createTextNode(acceso.texto));
+
+    banner.appendChild(info);
+    banner.appendChild(boton);
+    banner.hidden = false;
+  }
+
   /** Escribe la fecha de inicio del diplomado en la tarjeta de datos clave. */
   function renderFechaInicio() {
     var destino = document.querySelector("[data-fecha-inicio]");
@@ -194,19 +376,65 @@
   }
 
   /* ---------------------------------------------------------------------
+     Header que aparece al hacer scroll + barra de progreso
+     --------------------------------------------------------------------- */
+  function activarTopbar() {
+    var topbar = document.getElementById("topbar");
+    var progreso = document.getElementById("topbar-progress");
+    var hero = document.querySelector(".hero");
+    if (!topbar) return;
+
+    var pendiente = false;
+
+    function actualizar() {
+      pendiente = false;
+
+      var y = window.pageYOffset || document.documentElement.scrollTop;
+
+      /* El header entra cuando ya casi no se ve el hero */
+      var umbral = hero ? hero.offsetHeight - 90 : 240;
+      topbar.classList.toggle("topbar--visible", y > umbral);
+
+      /* Progreso de lectura */
+      if (progreso) {
+        var alto = document.documentElement.scrollHeight - window.innerHeight;
+        var pct = alto > 0 ? (y / alto) * 100 : 0;
+        progreso.style.width = Math.min(100, Math.max(0, pct)).toFixed(1) + "%";
+      }
+    }
+
+    function alHacerScroll() {
+      if (pendiente) return;
+      pendiente = true;
+      window.requestAnimationFrame(actualizar);
+    }
+
+    window.addEventListener("scroll", alHacerScroll, { passive: true });
+    window.addEventListener("resize", alHacerScroll, { passive: true });
+    actualizar();
+  }
+
+  /* ---------------------------------------------------------------------
      Arranque
      --------------------------------------------------------------------- */
   function iniciar() {
     renderFechaInicio();
     renderHorario();
+    renderBannerHoy();
+    activarTopbar();
 
     /* Revisamos cada minuto para que el estado cambie solo al pasar la
        medianoche en Colombia, sin necesidad de recargar la página. */
-    setInterval(renderHorario, 60000);
+    function refrescar() {
+      renderHorario();
+      renderBannerHoy();
+    }
+
+    setInterval(refrescar, 60000);
 
     /* También al volver a la pestaña tras un rato */
     document.addEventListener("visibilitychange", function () {
-      if (!document.hidden) renderHorario();
+      if (!document.hidden) refrescar();
     });
   }
 
