@@ -51,13 +51,13 @@ const clases = [
   {
     tema: "Anatomía radiológica de cráneo",
     docente: "Sebastián García Patiño",
-    fecha: "2026-07-06T18:00:00-05:00",
+    fecha: "",
     link: "https://ejemplo.com/clase-1",
     grabacion: "https://ejemplo.com/grabacion-1"
   },
   {
     tema: "Anatomía radiológica de tórax",
-    docente: "Mateo Correa",
+    docente: "Diego Alberto Pérez",
     fecha: "2026-07-13T18:00:00-05:00",
     link: "https://ejemplo.com/clase-2",
     grabacion: ""
@@ -65,7 +65,7 @@ const clases = [
   {
     /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
     tema: "Anatomía radiológica de abdomen",
-    docente: "Diego Alberto Pérez",
+    docente: "Mateo Correa",
     fecha: "2026-07-20T18:00:00-05:00",
     link: "https://ejemplo.com/clase-3",
     demoHoy: true
@@ -73,16 +73,94 @@ const clases = [
   {
     /* 👇 Ejemplo de clase con AVISO DE CAMBIO */
     tema: "TEC (Trauma encefalocraneano)",
-    docente: "Sebastián García Patiño",
-    fecha: "2026-07-27T18:00:00-05:00",
+    docente: "Diego Alberto Pérez",
+    fecha: "",
     link: "https://ejemplo.com/clase-4",
-    cambio: "Antes era a las 5:00 p. m.",
-    cambioFecha: "2026-07-18"
+    cambio: "Cambio de fecha",
+    cambioFecha: "2026-07-20"
   },
   {
-    tema: "ACV (Ataque cerebrovascular)",
+    tema: "Radiografía de tórax",
+    docente: "Diego Alberto Pérez",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Indicación de contraste en tomografía",
     docente: "Mateo Correa",
-    fecha: "2026-08-03T18:00:00-05:00",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Síndrome aórtico",
+    docente: "Sebastián García Patiño",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "TEP (Tromboembolismo pulmonar)",
+    docente: "Mateo Correa",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Neumonía",
+    docente: "Diego Alberto Pérez",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Abdomen agudo por tomografía",
+    docente: "Sebastián García Patiño",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Isquemia mesentérica",
+    docente: "Sebastián García Patiño",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Urolitiasis",
+    docente: "Sebastián García Patiño",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Miembro superior (anatomía, fracturas y luxaciones)",
+    docente: "Mateo Correa",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Miembro inferior (anatomía, fracturas y luxaciones)",
+    docente: "Mateo Correa",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Trauma de tórax",
+    docente: "Diego Alberto Pérez",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Trauma de abdomen",
+    docente: "Sebastián García Patiño",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Obstrucción intestinal",
+    docente: "Mateo Correa",
+    fecha: "",
+    link: ""
+  },
+  {
+    tema: "Trauma no accidental",
+    docente: "Mateo Correa",
+    fecha: "",
     link: ""
   }
 ];
