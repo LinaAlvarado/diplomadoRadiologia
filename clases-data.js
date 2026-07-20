@@ -58,7 +58,7 @@ const clases = [
   {
     tema: "Anatomía radiológica de tórax",
     docente: "Diego Alberto Pérez",
-    fecha: "2026-07-13T18:00:00-05:00",
+    fecha: "",
     link: "https://ejemplo.com/clase-2",
     grabacion: ""
   },
@@ -66,9 +66,9 @@ const clases = [
     /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
     tema: "Anatomía radiológica de abdomen",
     docente: "Mateo Correa",
-    fecha: "2026-07-20T18:00:00-05:00",
+    fecha: "",
     link: "https://ejemplo.com/clase-3",
-    demoHoy: true
+    // demoHoy: true
   },
   {
     /* 👇 Ejemplo de clase con AVISO DE CAMBIO */
@@ -76,8 +76,8 @@ const clases = [
     docente: "Diego Alberto Pérez",
     fecha: "",
     link: "https://ejemplo.com/clase-4",
-    cambio: "Cambio de fecha",
-    cambioFecha: "2026-07-20"
+    // cambio: "Cambio de fecha",
+    // cambioFecha: "2026-07-20"
   },
   {
     tema: "Radiografía de tórax",
