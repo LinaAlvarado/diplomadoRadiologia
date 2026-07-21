@@ -94,14 +94,7 @@ const clases = [
     link: "https://ejemplo.com/clase-2",
     grabacion: ""
   },
-  {
-    /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
-    tema: "Anatomía radiológica de abdomen",
-    docente: "",
-    fecha: "",
-    link: "https://ejemplo.com/clase-3",
-    // demoHoy: true
-  },
+
   {
     /* 👇 Ejemplo de clase con AVISO DE CAMBIO */
     tema: "TEC (Trauma encefalocraneano)",
