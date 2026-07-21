@@ -204,7 +204,7 @@ const fechaInicioDiplomado = "Jueves 23 Julio";
 const CLASES_GRATIS = 7;
 const WHATSAPP_NUMERO = "573022262221";
 const WHATSAPP_MENSAJE =
-  "Hola, quiero información para acceder al diplomado completo de radiología.";
+  "Hola, quiero información para acceder al diplomado completo de interpretación de imágenes";
 
 /* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño

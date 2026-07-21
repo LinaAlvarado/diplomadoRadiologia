@@ -255,7 +255,7 @@
     if (bloqueada) {
       return {
         texto: "Desbloquear",
-        url: enlaceWhatsApp("Me interesa la clase: " + clase.tema + "."),
+        url: enlaceWhatsApp(),
         activo: true,
         tipo: "bloqueada"
       };
@@ -369,7 +369,7 @@
 
     var cta = document.createElement("a");
     cta.className = "schedule__corte-cta";
-    cta.href = enlaceWhatsApp("Quiero desbloquear las " + bloqueadas + " clases restantes.");
+    cta.href = enlaceWhatsApp();
     cta.target = "_blank";
     cta.rel = "noopener";
     cta.textContent = "Desbloquear diplomado";
