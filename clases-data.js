@@ -169,7 +169,7 @@ const clases = [
    FECHA DE INICIO DEL DIPLOMADO (tarjeta "Fecha de inicio")
    Texto libre, por ejemplo: "1 de agosto de 2026"
    ------------------------------------------------------------------------- */
-const fechaInicioDiplomado = "1 de agosto de 2026";
+const fechaInicioDiplomado = "";
 
 /* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño
