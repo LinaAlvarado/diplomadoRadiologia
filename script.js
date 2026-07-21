@@ -24,6 +24,38 @@
     '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" ' +
     'style="width:12px;height:12px;flex:none"><path d="M8 5.5v13l11-6.5z"/></svg>';
 
+  var ICONO_CANDADO =
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" ' +
+    'style="width:12px;height:12px;flex:none">' +
+    '<rect x="4" y="10.5" width="16" height="10.5" rx="2.5"/>' +
+    '<path d="M8 10.5V7a4 4 0 0 1 8 0v3.5"/></svg>';
+
+  /* ---------------------------------------------------------------------
+     Venta / WhatsApp
+     --------------------------------------------------------------------- */
+
+  /** Número y mensaje salen de clases-data.js; aquí solo hay respaldos. */
+  function numeroWhatsApp() {
+    return typeof WHATSAPP_NUMERO !== "undefined" && String(WHATSAPP_NUMERO).trim() !== ""
+      ? String(WHATSAPP_NUMERO).replace(/[^\d]/g, "")
+      : "573022262221";
+  }
+
+  /** URL de WhatsApp con el mensaje ya escrito. */
+  function enlaceWhatsApp(mensajeExtra) {
+    var base = typeof WHATSAPP_MENSAJE !== "undefined" && String(WHATSAPP_MENSAJE).trim() !== ""
+      ? String(WHATSAPP_MENSAJE)
+      : "Hola, quiero información del diplomado.";
+    var texto = mensajeExtra ? base + " " + mensajeExtra : base;
+    return "https://wa.me/" + numeroWhatsApp() + "?text=" + encodeURIComponent(texto);
+  }
+
+  /** Cuántas clases quedan abiertas al público (las primeras del cronograma). */
+  function cuantasGratis() {
+    return typeof CLASES_GRATIS === "number" && CLASES_GRATIS >= 0 ? CLASES_GRATIS : 7;
+  }
+
   /* ---------------------------------------------------------------------
      Utilidades de fecha
      --------------------------------------------------------------------- */
@@ -124,15 +156,16 @@
     return typeof valor === "string" && valor.trim() !== "";
   }
 
-  function crearFila(clase, ahora) {
+  function crearFila(clase, ahora, bloqueada) {
     var fecha = new Date(clase.fecha);
     var fechaValida = !isNaN(fecha.getTime());
     var estado = fechaValida ? estadoDeClase(clase, fecha, ahora) : "futura";
     var fueModificada = tieneTexto(clase.cambio);
-    var acceso = calcularAcceso(clase, estado);
+    var acceso = calcularAcceso(clase, estado, bloqueada);
 
     var fila = document.createElement("div");
     fila.className = "class-row class-row--" + estado +
+      (bloqueada ? " class-row--bloqueada" : "") +
       (fueModificada ? " class-row--actualizada" : "") +
       /* Es hoy pero aún sin link: se atenúa el resaltado verde */
       (estado === "hoy" && !acceso.activo ? " class-row--sin-link" : "");
@@ -142,7 +175,7 @@
     tema.className = "class-row__tema";
     tema.innerHTML = escapar(clase.tema);
 
-    if (estado === "hoy") {
+    if (!bloqueada && estado === "hoy") {
       var badgeHoy = document.createElement("span");
       badgeHoy.className = "class-row__badge";
       badgeHoy.textContent = "Hoy";
@@ -213,9 +246,21 @@
    *             Si todavía no hay link → "Link pronto" (inactivo).
    *   PASADA  → "Ver grabación" si hay grabación, si no "Grabación pronto".
    *
+   *   BLOQUEADA (fuera de las primeras CLASES_GRATIS) → manda a WhatsApp,
+   *             sin importar la fecha.
+   *
    * Devuelve { texto, url, activo, tipo }
    */
-  function calcularAcceso(clase, estado) {
+  function calcularAcceso(clase, estado, bloqueada) {
+    if (bloqueada) {
+      return {
+        texto: "Desbloquear",
+        url: enlaceWhatsApp("Me interesa la clase: " + clase.tema + "."),
+        activo: true,
+        tipo: "bloqueada"
+      };
+    }
+
     if (estado === "pasada") {
       return tieneTexto(clase.grabacion)
         ? { texto: "Ver grabación", url: clase.grabacion, activo: true, tipo: "grabacion" }
@@ -243,7 +288,8 @@
 
     var link = document.createElement("a");
     link.className = "class-row__link" +
-      (acceso.tipo === "grabacion" ? " class-row__link--grabacion" : "");
+      (acceso.tipo === "grabacion" ? " class-row__link--grabacion" : "") +
+      (acceso.tipo === "bloqueada" ? " class-row__link--bloqueada" : "");
     link.href = acceso.url;
     link.target = "_blank";
     link.rel = "noopener";
@@ -251,6 +297,10 @@
     if (acceso.tipo === "grabacion") {
       link.innerHTML = ICONO_PLAY + acceso.texto;
       link.setAttribute("aria-label", "Ver grabación de la clase: " + clase.tema);
+    } else if (acceso.tipo === "bloqueada") {
+      link.innerHTML = ICONO_CANDADO + acceso.texto;
+      link.setAttribute("aria-label",
+        "Escríbenos por WhatsApp para acceder a la clase: " + clase.tema);
     } else {
       link.textContent = acceso.texto;
       link.setAttribute("aria-label", "Acceder a la clase: " + clase.tema);
@@ -277,13 +327,56 @@
 
     var ahora = new Date();
     var fragmento = document.createDocumentFragment();
+    var gratis = cuantasGratis();
+    var bloqueadas = Math.max(0, lista.length - gratis);
 
-    lista.forEach(function (clase) {
-      fragmento.appendChild(crearFila(clase, ahora));
+    lista.forEach(function (clase, i) {
+      /* El corte va después de la última clase abierta, solo si de verdad
+         quedan clases bloqueadas debajo. */
+      if (i === gratis && bloqueadas > 0) {
+        fragmento.appendChild(crearCorteVenta(bloqueadas));
+      }
+      fragmento.appendChild(crearFila(clase, ahora, i >= gratis));
     });
 
     contenedor.innerHTML = "";
     contenedor.appendChild(fragmento);
+  }
+
+  /**
+   * Franja que separa las clases abiertas de las del diplomado completo.
+   * Es el punto de venta principal de la tabla.
+   */
+  function crearCorteVenta(bloqueadas) {
+    var corte = document.createElement("div");
+    corte.className = "schedule__corte";
+
+    var texto = document.createElement("div");
+    texto.className = "schedule__corte-texto";
+
+    var titulo = document.createElement("p");
+    titulo.className = "schedule__corte-titulo";
+    titulo.innerHTML = ICONO_CANDADO +
+      "Hasta aquí llega el acceso abierto";
+
+    var detalle = document.createElement("p");
+    detalle.className = "schedule__corte-detalle";
+    detalle.textContent = "Las " + bloqueadas + " clases restantes, las grabaciones y " +
+      "el certificado hacen parte del diplomado completo.";
+
+    texto.appendChild(titulo);
+    texto.appendChild(detalle);
+
+    var cta = document.createElement("a");
+    cta.className = "schedule__corte-cta";
+    cta.href = enlaceWhatsApp("Quiero desbloquear las " + bloqueadas + " clases restantes.");
+    cta.target = "_blank";
+    cta.rel = "noopener";
+    cta.textContent = "Desbloquear diplomado";
+
+    corte.appendChild(texto);
+    corte.appendChild(cta);
+    return corte;
   }
 
   /**
@@ -294,15 +387,26 @@
     var banner = document.getElementById("today-banner");
     if (!banner) return;
 
-    var lista = typeof clases !== "undefined" && Array.isArray(clases) ? clases : [];
+    var lista = typeof clases !== "undefined" && Array.isArray(clases) ? clases.slice() : [];
     var ahora = new Date();
+
+    /* Mismo orden que la tabla, para saber si la clase de hoy es de las
+       abiertas o ya hace parte del diplomado completo. */
+    lista.sort(function (a, b) {
+      return new Date(a.fecha) - new Date(b.fecha);
+    });
 
     /* Buscamos la clase de hoy (la primera, si hubiera varias) */
     var claseHoy = null;
+    var hoyBloqueada = false;
     for (var i = 0; i < lista.length; i++) {
       var f = new Date(lista[i].fecha);
       if (isNaN(f.getTime())) continue;
-      if (estadoDeClase(lista[i], f, ahora) === "hoy") { claseHoy = lista[i]; break; }
+      if (estadoDeClase(lista[i], f, ahora) === "hoy") {
+        claseHoy = lista[i];
+        hoyBloqueada = i >= cuantasGratis();
+        break;
+      }
     }
 
     if (!claseHoy) {
@@ -311,7 +415,7 @@
       return;
     }
 
-    var acceso = calcularAcceso(claseHoy, "hoy");
+    var acceso = calcularAcceso(claseHoy, "hoy", hoyBloqueada);
     var fecha = new Date(claseHoy.fecha);
 
     banner.className = "today" + (acceso.activo ? "" : " today--sin-link");
@@ -378,6 +482,35 @@
     }
   }
 
+  /**
+   * Deja todos los botones de WhatsApp del HTML apuntando al número de
+   * clases-data.js, cada uno con su mensaje ya escrito (atributo data-wa).
+   * Así el número solo se cambia en un lugar.
+   */
+  function aplicarEnlacesWhatsApp() {
+    var enlaces = document.querySelectorAll("[data-wa]");
+    for (var i = 0; i < enlaces.length; i++) {
+      enlaces[i].href = enlaceWhatsApp(enlaces[i].getAttribute("data-wa"));
+    }
+  }
+
+  /** Rellena en el texto cuántas clases son abiertas y cuántas bloqueadas. */
+  function renderConteoClases() {
+    var total = typeof clases !== "undefined" && Array.isArray(clases) ? clases.length : 0;
+    var gratis = Math.min(cuantasGratis(), total);
+    var bloqueadas = Math.max(0, total - gratis);
+
+    var abiertas = document.querySelectorAll("[data-clases-gratis]");
+    for (var i = 0; i < abiertas.length; i++) {
+      abiertas[i].textContent = String(gratis);
+    }
+
+    var cerradas = document.querySelectorAll("[data-clases-bloqueadas]");
+    for (var j = 0; j < cerradas.length; j++) {
+      cerradas[j].textContent = String(bloqueadas);
+    }
+  }
+
   /* ---------------------------------------------------------------------
      Header que aparece al hacer scroll + barra de progreso
      --------------------------------------------------------------------- */
@@ -422,6 +555,8 @@
      --------------------------------------------------------------------- */
   function iniciar() {
     renderFechaInicio();
+    aplicarEnlacesWhatsApp();
+    renderConteoClases();
     renderHorario();
     renderBannerHoy();
     activarTopbar();

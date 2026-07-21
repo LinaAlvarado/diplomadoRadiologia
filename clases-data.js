@@ -73,15 +73,23 @@ const clases = [
     fecha: "2026-07-29T17:00:00-05:00",
     link: ""
   },
-  {
-    tema: "Trauma de abdomen",
+    {
+    /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
+    tema: "Anatomía radiológica de abdomen",
     docente: "Sebastián García Patiño",
     fecha: "2026-07-30T17:00:00-05:00",
+    link: "https://ejemplo.com/clase-3",
+    // demoHoy: true
+  },
+  {
+    tema: "Trauma de abdomen",
+    docente: "",
+    fecha: "",
     link: ""
   },
   {
     tema: "Anatomía radiológica de tórax",
-    docente: "Diego Alberto Pérez",
+    docente: "",
     fecha: "",
     link: "https://ejemplo.com/clase-2",
     grabacion: ""
@@ -89,7 +97,7 @@ const clases = [
   {
     /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
     tema: "Anatomía radiológica de abdomen",
-    docente: "Mateo Correa",
+    docente: "",
     fecha: "",
     link: "https://ejemplo.com/clase-3",
     // demoHoy: true
@@ -97,7 +105,7 @@ const clases = [
   {
     /* 👇 Ejemplo de clase con AVISO DE CAMBIO */
     tema: "TEC (Trauma encefalocraneano)",
-    docente: "Diego Alberto Pérez",
+    docente: "",
     fecha: "",
     link: "https://ejemplo.com/clase-4",
     // cambio: "Cambio de fecha",
@@ -105,68 +113,68 @@ const clases = [
   },
   {
     tema: "Radiografía de tórax",
-    docente: "Diego Alberto Pérez",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Síndrome aórtico",
-    docente: "Sebastián García Patiño",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "TEP (Tromboembolismo pulmonar)",
-    docente: "Mateo Correa",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Neumonía",
-    docente: "Diego Alberto Pérez",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Abdomen agudo por tomografía",
-    docente: "Sebastián García Patiño",
+    docente:"",
     fecha: "",
     link: ""
   },
   {
     tema: "Isquemia mesentérica",
-    docente: "Sebastián García Patiño",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Urolitiasis",
-    docente: "Sebastián García Patiño",
+    docente: "",
     fecha: "",
     link: ""
   },
 
   {
     tema: "Miembro inferior (anatomía, fracturas y luxaciones)",
-    docente: "Mateo Correa",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Trauma de tórax",
-    docente: "Diego Alberto Pérez",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Obstrucción intestinal",
-    docente: "Mateo Correa",
+    docente: "",
     fecha: "",
     link: ""
   },
   {
     tema: "Trauma no accidental",
-    docente: "Mateo Correa",
+    docente: "",
     fecha: "",
     link: ""
   }
@@ -177,6 +185,26 @@ const clases = [
    Texto libre, por ejemplo: "1 de agosto de 2026"
    ------------------------------------------------------------------------- */
 const fechaInicioDiplomado = "Jueves 23 Julio";
+
+/* -------------------------------------------------------------------------
+   ACCESO GRATIS Y VENTA DEL DIPLOMADO
+   -------------------------------------------------------------------------
+   CLASES_GRATIS → Cuántas clases quedan abiertas al público, contando desde
+                   la primera del cronograma. Las demás aparecen bloqueadas
+                   con el botón "Desbloquear diplomado", que abre WhatsApp.
+                   Si algún día quieres abrir todo, pon un número grande
+                   (por ejemplo 999).
+
+   WHATSAPP_NUMERO → Número al que llegan los mensajes de compra.
+                     Formato: indicativo + número, sin espacios ni "+".
+
+   WHATSAPP_MENSAJE → Texto que aparece ya escrito cuando la persona abre
+                      el chat. Facilita que escriba.
+   ------------------------------------------------------------------------- */
+const CLASES_GRATIS = 7;
+const WHATSAPP_NUMERO = "573022262221";
+const WHATSAPP_MENSAJE =
+  "Hola, quiero información para acceder al diplomado completo de radiología.";
 
 /* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño
