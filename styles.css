@@ -640,6 +640,12 @@ a { color: inherit; text-decoration: none; }
   margin-right: 6px;
 }
 
+/* En celular las celdas van apiladas: si una está vacía (sin docente o sin
+   fecha) se quita para no dejar un hueco. En desktop NO se ocultan, porque
+   cada celda es una columna de la tabla y correría el botón de lugar. */
+.class-row__docente:empty,
+.class-row__hora:empty { display: none; }
+
 .class-row__acceso { justify-self: start; }
 
 .class-row__link {
@@ -1137,6 +1143,10 @@ a { color: inherit; text-decoration: none; }
   }
 
   .class-row__etiqueta { display: none; }
+
+  /* Vuelven a ocupar su columna aunque estén vacías */
+  .class-row__docente:empty,
+  .class-row__hora:empty { display: block; }
 
   /* El botón ocupa toda su columna, así todos quedan del mismo ancho
      y alineados a la derecha bajo el título "Acceso". */

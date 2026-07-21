@@ -194,11 +194,15 @@
       tema.appendChild(badgeUpd);
     }
 
-    /* --- Docente --- */
+    /* --- Docente ---
+       Si todavía no hay docente asignado, la celda va vacía. Así en celular
+       no queda la etiqueta "DOCENTE" sola, sin nombre debajo. */
     var docente = document.createElement("div");
     docente.className = "class-row__docente";
-    docente.innerHTML =
-      '<span class="class-row__etiqueta">Docente</span>' + escapar(clase.docente);
+    if (tieneTexto(clase.docente)) {
+      docente.innerHTML =
+        '<span class="class-row__etiqueta">Docente</span>' + escapar(clase.docente);
+    }
 
     /* --- Hora (+ nota de qué cambió) ---
        En las clases bloqueadas sin fecha la celda va vacía: el "Por definir"
