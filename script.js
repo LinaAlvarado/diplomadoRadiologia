@@ -200,15 +200,19 @@
     docente.innerHTML =
       '<span class="class-row__etiqueta">Docente</span>' + escapar(clase.docente);
 
-    /* --- Hora (+ nota de qué cambió) --- */
+    /* --- Hora (+ nota de qué cambió) ---
+       En las clases bloqueadas sin fecha la celda va vacía: el "Por definir"
+       no aporta nada y le resta fuerza al botón de desbloquear. */
     var hora = document.createElement("div");
     hora.className = "class-row__hora";
-    hora.innerHTML =
-      '<span class="class-row__etiqueta">Hora</span>' +
-      (fechaValida
-        ? '<span class="class-row__hora-valor">' +
-            escapar(formatearFechaHora(fecha)) + '</span>'
-        : "Por definir");
+    if (fechaValida) {
+      hora.innerHTML =
+        '<span class="class-row__etiqueta">Hora</span>' +
+        '<span class="class-row__hora-valor">' +
+          escapar(formatearFechaHora(fecha)) + '</span>';
+    } else if (!bloqueada) {
+      hora.innerHTML = '<span class="class-row__etiqueta">Hora</span>Por definir';
+    }
 
     if (fueModificada) {
       var nota = document.createElement("span");
