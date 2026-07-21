@@ -365,12 +365,12 @@
     var titulo = document.createElement("p");
     titulo.className = "schedule__corte-titulo";
     titulo.innerHTML = ICONO_CANDADO +
-      "Hasta aquí llega el acceso abierto";
+      "Hasta aquí llegan las clases en vivo abiertas";
 
     var detalle = document.createElement("p");
     detalle.className = "schedule__corte-detalle";
-    detalle.textContent = "Las " + bloqueadas + " clases restantes, las grabaciones y " +
-      "el certificado hacen parte del diplomado completo.";
+    detalle.textContent = "Inscríbete al diplomado y desbloquea las " + bloqueadas +
+      " clases restantes con quizes interactivos + certificado.";
 
     texto.appendChild(titulo);
     texto.appendChild(detalle);
