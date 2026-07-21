@@ -605,6 +605,13 @@ a { color: inherit; text-decoration: none; }
 
 .class-row__hora { font-variant-numeric: tabular-nums; }
 
+/* Fecha/hora ya definida: resaltada en verde para que se lea de un vistazo.
+   Las que dicen "Por definir" no llevan este span y quedan atenuadas. */
+.class-row__hora-valor {
+  color: var(--color-lime);
+  font-weight: 700;
+}
+
 /* Etiquetas móviles (Docente:, Hora:) — se ocultan en desktop */
 .class-row__etiqueta {
   color: var(--color-text-off);
@@ -711,6 +718,11 @@ a { color: inherit; text-decoration: none; }
 .class-row--pasada .class-row__tema { color: var(--color-text-mut); font-weight: 600; }
 .class-row--pasada .class-row__docente,
 .class-row--pasada .class-row__hora { color: var(--color-text-off); }
+/* En clases ya pasadas la fecha no necesita destacarse */
+.class-row--pasada .class-row__hora-valor {
+  color: var(--color-text-off);
+  font-weight: 600;
+}
 
 /* Botón de grabación */
 .class-row__link--grabacion {

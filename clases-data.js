@@ -51,9 +51,33 @@ const clases = [
   {
     tema: "Anatomía radiológica de cráneo",
     docente: "Sebastián García Patiño",
-    fecha: "",
-    link: "https://ejemplo.com/clase-1",
-    grabacion: "https://ejemplo.com/grabacion-1"
+    fecha: "2026-07-23T17:00:00-05:00",
+    link: "",
+    grabacion: ""
+  },
+  {
+    tema: "Indicación de contraste en tomografía",
+    docente: "Mateo Correa",
+    fecha: "2026-07-27T17:00:00-05:00",
+    link: ""
+  },
+    {
+    tema: "Miembro superior (anatomía, fracturas y luxaciones)",
+    docente: "Mateo Correa",
+    fecha: "2026-07-28T17:00:00-05:00",
+    link: ""
+  },
+     {
+    tema: "ACV (Accidente cerebrovascular)",
+    docente: "Diego Alberto Pérez",
+    fecha: "2026-07-29T17:00:00-05:00",
+    link: ""
+  },
+  {
+    tema: "Trauma de abdomen",
+    docente: "Sebastián García Patiño",
+    fecha: "2026-07-30T17:00:00-05:00",
+    link: ""
   },
   {
     tema: "Anatomía radiológica de tórax",
@@ -82,12 +106,6 @@ const clases = [
   {
     tema: "Radiografía de tórax",
     docente: "Diego Alberto Pérez",
-    fecha: "",
-    link: ""
-  },
-  {
-    tema: "Indicación de contraste en tomografía",
-    docente: "Mateo Correa",
     fecha: "",
     link: ""
   },
@@ -127,12 +145,7 @@ const clases = [
     fecha: "",
     link: ""
   },
-  {
-    tema: "Miembro superior (anatomía, fracturas y luxaciones)",
-    docente: "Mateo Correa",
-    fecha: "",
-    link: ""
-  },
+
   {
     tema: "Miembro inferior (anatomía, fracturas y luxaciones)",
     docente: "Mateo Correa",
@@ -142,12 +155,6 @@ const clases = [
   {
     tema: "Trauma de tórax",
     docente: "Diego Alberto Pérez",
-    fecha: "",
-    link: ""
-  },
-  {
-    tema: "Trauma de abdomen",
-    docente: "Sebastián García Patiño",
     fecha: "",
     link: ""
   },
@@ -169,7 +176,7 @@ const clases = [
    FECHA DE INICIO DEL DIPLOMADO (tarjeta "Fecha de inicio")
    Texto libre, por ejemplo: "1 de agosto de 2026"
    ------------------------------------------------------------------------- */
-const fechaInicioDiplomado = "";
+const fechaInicioDiplomado = "Jueves 23 Julio";
 
 /* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño

@@ -172,7 +172,10 @@
     hora.className = "class-row__hora";
     hora.innerHTML =
       '<span class="class-row__etiqueta">Hora</span>' +
-      (fechaValida ? escapar(formatearFechaHora(fecha)) : "Por definir");
+      (fechaValida
+        ? '<span class="class-row__hora-valor">' +
+            escapar(formatearFechaHora(fecha)) + '</span>'
+        : "Por definir");
 
     if (fueModificada) {
       var nota = document.createElement("span");
