@@ -216,7 +216,7 @@ const PROMO_ACTIVA = true;
 const PROMO_ETIQUETA = "Promoción exclusiva";
 const PROMO_MONTO = "$100.000";
 const PROMO_TEXTO = "de bono en tu inscripción al diplomado completo.";
-const PROMO_CIERRE = "Cupos limitados · Paga en 2 cuotas";
+const PROMO_CIERRE = "Paga en 2 cuotas";
 const PROMO_MENSAJE_WA =
   "Hola, quiero aprovechar el bono de $100.000 para inscribirme al diplomado completo.";
 

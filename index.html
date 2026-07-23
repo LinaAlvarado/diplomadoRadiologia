@@ -123,6 +123,48 @@
         <!-- Banner "Clase de hoy". Lo genera script.js a partir de clases-data.js.
              Si hoy no hay clase, se oculta solo. -->
         <div class="today" id="today-banner" hidden></div>
+
+        <!-- Banner de promoción. Contenido y visibilidad → clases-data.js.
+             script.js lo rellena y lo oculta si PROMO_ACTIVA es false. -->
+        <a class="promo" id="promo-banner" href="https://wa.me/573022262221"
+           target="_blank" rel="noopener" hidden>
+          <span class="promo__glow" aria-hidden="true"></span>
+
+          <span class="promo__main">
+            <span class="promo__badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 11.5 4 6.5V4h2.5L11.5 9"/><path d="m14 9 5-5h1v1l-5 5"/>
+                <circle cx="12" cy="14" r="7"/><path d="m9.5 14 1.8 1.8L15 12"/>
+              </svg>
+              <span class="promo__etiqueta" data-promo-etiqueta>Promoción exclusiva</span>
+            </span>
+
+            <span class="promo__linea">
+              <span class="promo__monto" data-promo-monto>$100.000</span>
+              <span class="promo__desc" data-promo-texto>de bono en tu inscripción.</span>
+            </span>
+
+            <span class="promo__meta">
+              <span class="promo__count" data-promo-countdown hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>
+                </svg>
+                Termina en <strong data-promo-countdown-valor>—</strong>
+              </span>
+              <span class="promo__cierre-texto" data-promo-cierre>Paga en 2 cuotas</span>
+            </span>
+          </span>
+
+          <span class="promo__cta">
+            Aprovechar
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>
+            </svg>
+          </span>
+        </a>
       </div>
     </section>
 
@@ -231,48 +273,6 @@
     <!-- ====================== DIPLOMADO COMPLETO ====================== -->
     <section class="section" aria-labelledby="oferta-titulo">
       <div class="container">
-
-        <!-- Banner de promoción. Contenido y visibilidad → clases-data.js.
-             script.js lo rellena y lo oculta si PROMO_ACTIVA es false. -->
-        <a class="promo" id="promo-banner" href="https://wa.me/573022262221"
-           target="_blank" rel="noopener" hidden>
-          <span class="promo__glow" aria-hidden="true"></span>
-
-          <span class="promo__main">
-            <span class="promo__badge">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M9 11.5 4 6.5V4h2.5L11.5 9"/><path d="m14 9 5-5h1v1l-5 5"/>
-                <circle cx="12" cy="14" r="7"/><path d="m9.5 14 1.8 1.8L15 12"/>
-              </svg>
-              <span class="promo__etiqueta" data-promo-etiqueta>Promoción exclusiva</span>
-            </span>
-
-            <span class="promo__linea">
-              <span class="promo__monto" data-promo-monto>$100.000</span>
-              <span class="promo__desc" data-promo-texto>de bono en tu inscripción.</span>
-            </span>
-
-            <span class="promo__meta">
-              <span class="promo__count" data-promo-countdown hidden>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>
-                </svg>
-                Termina en <strong data-promo-countdown-valor>—</strong>
-              </span>
-              <span class="promo__cierre-texto" data-promo-cierre>Cupos limitados · Paga en 2 cuotas</span>
-            </span>
-          </span>
-
-          <span class="promo__cta">
-            Aprovechar
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
-                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>
-            </svg>
-          </span>
-        </a>
 
         <div class="card offer">
           <p class="section__kicker">Inscripción</p>
