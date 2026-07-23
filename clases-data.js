@@ -49,7 +49,7 @@
 
 const clases = [
   {
-    tema: "Anatomía radiológica de cráneo",
+    tema: "Anatomía Cerebral CT",
     docente: "Sebastián García Patiño",
     fecha: "2026-07-23T17:00:00-05:00",
     link: "",
