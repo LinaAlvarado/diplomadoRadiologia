@@ -52,7 +52,7 @@ const clases = [
     tema: "Anatomía Cerebral CT",
     docente: "Sebastián García Patiño",
     fecha: "2026-07-23T17:00:00-05:00",
-    link: "",
+    link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_NmIyNTRmYWItMjA2YS00MTU2LTk1NTctNWM1ZGVjOWI4NGQ0%40thread.v2/0?context=%7b%22Tid%22%3a%224f637f79-0a56-410b-9b1e-0a776875c2af%22%2c%22Oid%22%3a%22ad9bcd70-3a3a-4483-811b-c7176ef6fbb5%22%7d",
     grabacion: ""
   },
   {
