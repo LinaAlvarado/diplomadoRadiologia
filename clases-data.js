@@ -200,6 +200,34 @@ const WHATSAPP_MENSAJE =
   "Hola, quiero información para acceder al diplomado completo de interpretación de imágenes";
 
 /* -------------------------------------------------------------------------
+   PROMOCIÓN / BONO
+   -------------------------------------------------------------------------
+   Banner destacado que anuncia una promoción por tiempo limitado.
+
+   PROMO_ACTIVA → true muestra el banner; false lo oculta por completo
+                  (sin borrar nada, para poder reactivarlo después).
+
+   PROMO_ETIQUETA → Texto pequeño de arriba. Ej: "Promoción exclusiva".
+   PROMO_MONTO    → El valor del bono, bien grande. Ej: "$100.000".
+   PROMO_TEXTO    → Frase que explica el beneficio.
+   PROMO_CIERRE   → Nota final pequeña (condiciones / urgencia).
+   ------------------------------------------------------------------------- */
+const PROMO_ACTIVA = true;
+const PROMO_ETIQUETA = "Promoción exclusiva";
+const PROMO_MONTO = "$100.000";
+const PROMO_TEXTO = "de bono en tu inscripción al diplomado completo.";
+const PROMO_CIERRE = "Cupos limitados · Paga en 2 cuotas";
+const PROMO_MENSAJE_WA =
+  "Hola, quiero aprovechar el bono de $100.000 para inscribirme al diplomado completo.";
+
+/* PROMO_FECHA_LIMITE → Cuándo termina la promo. Formato igual al de las
+                        clases: "AAAA-MM-DDTHH:MM:SS-05:00".
+                        Se muestra un contador regresivo ("Termina en 2d 05h…")
+                        y, al llegar a cero, la promo se oculta sola.
+                        Déjala en "" si no quieres contador ni vencimiento.  */
+const PROMO_FECHA_LIMITE = "2026-07-25T23:59:00-05:00";
+
+/* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño
    -------------------------------------------------------------------------
    Con true, la clase que tenga  demoHoy: true  se ve SIEMPRE resaltada como

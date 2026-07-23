@@ -51,6 +51,14 @@
     return "https://wa.me/" + numeroWhatsApp() + "?text=" + encodeURIComponent(texto);
   }
 
+  /** URL de WhatsApp con un mensaje completo propio (sin el texto base). */
+  function enlaceWhatsAppMensaje(mensaje) {
+    var texto = mensaje && String(mensaje).trim() !== ""
+      ? String(mensaje)
+      : (typeof WHATSAPP_MENSAJE !== "undefined" ? String(WHATSAPP_MENSAJE) : "Hola");
+    return "https://wa.me/" + numeroWhatsApp() + "?text=" + encodeURIComponent(texto);
+  }
+
   /** Cuántas clases quedan abiertas al público (las primeras del cronograma). */
   function cuantasGratis() {
     return typeof CLASES_GRATIS === "number" && CLASES_GRATIS >= 0 ? CLASES_GRATIS : 7;
@@ -519,6 +527,107 @@
     }
   }
 
+  /* Elementos de promo que actualiza el contador cada segundo */
+  var promoElementos = [];
+  var promoFechaLimite = null;
+  var promoIntervalo = null;
+
+  /**
+   * Promoción: rellena los textos desde clases-data.js, activa el contador
+   * regresivo y muestra tanto el banner del final como la barra fija de
+   * arriba. Todo se oculta solo si PROMO_ACTIVA es false o si ya venció.
+   */
+  function renderPromo() {
+    var banner = document.getElementById("promo-banner");
+    var barra = document.getElementById("promobar");
+    promoElementos = [];
+    if (banner) promoElementos.push(banner);
+    if (barra) promoElementos.push(barra);
+    if (promoElementos.length === 0) return;
+
+    var activa = typeof PROMO_ACTIVA === "undefined" ? false : PROMO_ACTIVA === true;
+    if (!activa) {
+      ocultarPromo();
+      return;
+    }
+
+    /* Textos (cada pieza solo si está definida en clases-data.js) */
+    var campos = {
+      "[data-promo-etiqueta]": typeof PROMO_ETIQUETA !== "undefined" ? PROMO_ETIQUETA : null,
+      "[data-promo-monto]": typeof PROMO_MONTO !== "undefined" ? PROMO_MONTO : null,
+      "[data-promo-texto]": typeof PROMO_TEXTO !== "undefined" ? PROMO_TEXTO : null,
+      "[data-promo-cierre]": typeof PROMO_CIERRE !== "undefined" ? PROMO_CIERRE : null
+    };
+    promoElementos.forEach(function (raiz) {
+      for (var sel in campos) {
+        if (!campos.hasOwnProperty(sel) || campos[sel] == null) continue;
+        var nodos = raiz.querySelectorAll(sel);
+        for (var i = 0; i < nodos.length; i++) nodos[i].textContent = campos[sel];
+      }
+    });
+
+    /* Enlace de WhatsApp con el mensaje propio de la promo */
+    var href = enlaceWhatsAppMensaje(
+      typeof PROMO_MENSAJE_WA !== "undefined" ? PROMO_MENSAJE_WA : null);
+    promoElementos.forEach(function (raiz) { raiz.href = href; });
+
+    /* Fecha límite → contador */
+    promoFechaLimite = null;
+    if (typeof PROMO_FECHA_LIMITE !== "undefined" && String(PROMO_FECHA_LIMITE).trim() !== "") {
+      var f = new Date(PROMO_FECHA_LIMITE);
+      if (!isNaN(f.getTime())) promoFechaLimite = f;
+    }
+
+    /* Ya venció: no mostramos nada */
+    if (promoFechaLimite && promoFechaLimite.getTime() <= Date.now()) {
+      ocultarPromo();
+      return;
+    }
+
+    promoElementos.forEach(function (raiz) { raiz.hidden = false; });
+    document.body.classList.add("con-promobar");
+
+    if (promoFechaLimite) {
+      actualizarCuentaRegresiva();
+      if (promoIntervalo) clearInterval(promoIntervalo);
+      promoIntervalo = setInterval(actualizarCuentaRegresiva, 1000);
+    }
+  }
+
+  function ocultarPromo() {
+    promoElementos.forEach(function (raiz) { raiz.hidden = true; });
+    document.body.classList.remove("con-promobar");
+    if (promoIntervalo) { clearInterval(promoIntervalo); promoIntervalo = null; }
+  }
+
+  /** Escribe "2d 05h 12m 30s" en cada contador y oculta la promo al llegar a 0. */
+  function actualizarCuentaRegresiva() {
+    if (!promoFechaLimite) return;
+    var restante = promoFechaLimite.getTime() - Date.now();
+
+    if (restante <= 0) {
+      ocultarPromo();
+      return;
+    }
+
+    var seg = Math.floor(restante / 1000);
+    var dias = Math.floor(seg / 86400);
+    var horas = Math.floor((seg % 86400) / 3600);
+    var mins = Math.floor((seg % 3600) / 60);
+    var segs = seg % 60;
+
+    function dos(n) { return (n < 10 ? "0" : "") + n; }
+    var texto = (dias > 0 ? dias + "d " : "") +
+      dos(horas) + "h " + dos(mins) + "m " + dos(segs) + "s";
+
+    promoElementos.forEach(function (raiz) {
+      var caja = raiz.querySelector("[data-promo-countdown]");
+      var valor = raiz.querySelector("[data-promo-countdown-valor]");
+      if (valor) valor.textContent = texto;
+      if (caja) caja.hidden = false;
+    });
+  }
+
   /* ---------------------------------------------------------------------
      Header que aparece al hacer scroll + barra de progreso
      --------------------------------------------------------------------- */
@@ -565,6 +674,7 @@
     renderFechaInicio();
     aplicarEnlacesWhatsApp();
     renderConteoClases();
+    renderPromo();
     renderHorario();
     renderBannerHoy();
     activarTopbar();
