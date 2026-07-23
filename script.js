@@ -260,7 +260,8 @@
    *             esté cargado en clases-data.js.
    *   HOY     → "Entrar ahora" (verde, activo) SOLO si ya hay link.
    *             Si todavía no hay link → "Link pronto" (inactivo).
-   *   PASADA  → "Ver grabación" si hay grabación, si no "Grabación pronto".
+   *   PASADA  → "Finalizada" (etiqueta gris inactiva). Las clases en vivo no
+   *             dejan grabación abierta.
    *
    *   BLOQUEADA (fuera de las primeras CLASES_GRATIS) → manda a WhatsApp,
    *             sin importar la fecha.
@@ -278,9 +279,7 @@
     }
 
     if (estado === "pasada") {
-      return tieneTexto(clase.grabacion)
-        ? { texto: "Ver grabación", url: clase.grabacion, activo: true, tipo: "grabacion" }
-        : { texto: "Grabación pronto", url: "", activo: false, tipo: "grabacion" };
+      return { texto: "Finalizada", url: "", activo: false, tipo: "finalizada" };
     }
 
     if (estado === "hoy") {
