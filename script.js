@@ -139,6 +139,9 @@
       return "hoy";
     }
 
+    /* Interruptor manual: marca la clase como terminada aunque sea "hoy". */
+    if (clase.finalizada === true) return "pasada";
+
     var diaClase = diaColombia(fechaClase);
     var diaHoy = diaColombia(ahora);
 
