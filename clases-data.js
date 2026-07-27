@@ -226,7 +226,7 @@ const PROMO_MENSAJE_WA =
                         Se muestra un contador regresivo ("Termina en 2d 05h…")
                         y, al llegar a cero, la promo se oculta sola.
                         Déjala en "" si no quieres contador ni vencimiento.  */
-const PROMO_FECHA_LIMITE = "2026-07-25T23:59:00-05:00";
+const PROMO_FECHA_LIMITE = "2026-07-28T23:59:00-05:00";
 
 /* -------------------------------------------------------------------------
    MODO DEMO  —  solo para revisar el diseño
