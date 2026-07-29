@@ -73,7 +73,7 @@ const clases = [
     tema: "ACV (Accidente cerebrovascular)",
     docente: "Diego Alberto Pérez",
     fecha: "2026-07-29T17:00:00-05:00",
-    link: ""
+    link: "https://teams.microsoft.com/l/meetup-join/19%3ameeting_N2Q0ZWY3YWMtMmYwMy00MDQ5LTgxOGEtMWFiYjBlZDY0MDZh%40thread.v2/0?context=%7b%22Tid%22%3a%224f637f79-0a56-410b-9b1e-0a776875c2af%22%2c%22Oid%22%3a%22ad9bcd70-3a3a-4483-811b-c7176ef6fbb5%22%7d"
   },
     {
     /* 👇 Esta es la clase de EJEMPLO marcada como "HOY" (ver MODO_DEMO abajo) */
