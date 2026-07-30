@@ -80,7 +80,7 @@ const clases = [
     tema: "Anatomía radiológica de abdomen",
     docente: "Sebastián García Patiño",
     fecha: "2026-07-30T17:00:00-05:00",
-    link: "https://ejemplo.com/clase-3",
+    link: ""
     // demoHoy: true
   },
   {
@@ -93,7 +93,7 @@ const clases = [
     tema: "Anatomía radiológica de tórax",
     docente: "",
     fecha: "",
-    link: "https://ejemplo.com/clase-2",
+    link: "",
     grabacion: ""
   },
 
@@ -102,7 +102,7 @@ const clases = [
     tema: "TEC (Trauma encefalocraneano)",
     docente: "",
     fecha: "",
-    link: "https://ejemplo.com/clase-4",
+    link: ""
     // cambio: "Cambio de fecha",
     // cambioFecha: "2026-07-20"
   },
